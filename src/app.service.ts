@@ -170,13 +170,13 @@ export class AppService {
 
     klineChart() {
         return new Promise((resolve, reject) => {
-            this.binance.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
+            this.binance.websockets.candlesticks(['BNBBTC'], "15m", (candlesticks) => {
                 let { e: eventType, E: eventTime, s: symbol, k: ticks } = candlesticks;
                 let { o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume } = ticks;
 
                 if (ticks.x == true) {
                     if (ticks.c < ticks.o) {
-                        console.log("1st condistion satisfied")
+                        console.log("candle pattern 1st condistion satisfied",this.arr)
                         this.arr.push(ticks);
                     }
                     if (ticks.c > ticks.o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
