@@ -264,9 +264,9 @@ export class AppController {
     });
   }
 
-  @Post('marketSellOrder/:quantity')
-  async marketSellOrder(@Param('quantity') quantity: number) {
-    return this.appService.marketSellOrder(quantity).then(res => {
+  @Post('withdraw/:quantity')
+  async withdraw(@Param('quantity') quantity: number) {
+    return this.appService.withdraw().then(res => {
       if (res) {
         return {
           status: 200,
@@ -279,6 +279,11 @@ export class AppController {
         };
       }
     });
+  }
+
+  @Post('sendMail')
+  async sendMail() {
+    return this.appService.sendMail();
   }
 
 }

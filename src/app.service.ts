@@ -3,10 +3,13 @@ import * as request from 'request';
 import * as crypto from 'crypto';
 import { SellOrderDto } from './dto/sell-order.dto';
 import { BuyOrderDto } from './dto/buy-order.dto';
+import { EmailService } from './email/email.service';
 const Binance = require('node-binance-api');
-
 @Injectable()
 export class AppService {
+    arr = [];
+    constructor(private readonly emailService: EmailService) { }
+
     binance = new Binance().options({
         APIKEY: 'Gmg4rGFbaPlzNomMNwDbDsjUr9lm30DCUGzcxtcQhck2ymFrod2PfjJdVbSrS1N3',
         APISECRET: '4QtHUWSNUExbYiFMJQbIvPReoH9vDybFZDcHTQe5mh8NrUohvsd9xlyOk8whsLeQ'
@@ -168,16 +171,29 @@ export class AppService {
     klineChart() {
         return new Promise((resolve, reject) => {
             this.binance.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
-                let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
-                let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
-                console.info(symbol+" "+interval+" candlestick update");
-                console.info("open: "+open);
-                console.info("high: "+high);
-                console.info("low: "+low);
-                console.info("close: "+close);
-                console.info("volume: "+volume);
-                console.info("isFinal: "+isFinal);
-              });
+                let { e: eventType, E: eventTime, s: symbol, k: ticks } = candlesticks;
+                let { o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume } = ticks;
+
+                if (ticks.x == true) {
+                    if (ticks.c < ticks.o) {
+                        console.log("1st condistion satisfied")
+                        this.arr.push(ticks);
+                    }
+                    if (ticks.c > ticks.o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
+                        console.log("candle pattern 2nd condistion satisfied", this.arr)
+                        console.info(symbol + " " + interval + " candlestick update");
+                        console.info("open: " + open);
+                        console.info("high: " + high);
+                        console.info("close: " + close);
+                        this.sendMail();
+                    } 
+                    else {
+                        this.arr.length = 0;
+                    }
+                }
+                console.log('array length', this.arr.length)
+                console.log('array element', this.arr)
+            });
         });
     }
 
@@ -282,12 +298,28 @@ export class AppService {
     withdrawHistory() {
         return new Promise((resolve, reject) => {
             this.binance.withdrawHistory((error, response, body) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(response);
-                }
+                //     if (error) {
+                //         reject(error);
+                //     } else {
+                //         resolve(response);
+                //     }
             });
         });
+    }
+
+    withdraw() {
+        return new Promise((resolve, reject) => {
+            //   const response =  this.binance.candlesticks("BNBBTC", "5m", (error, ticks, symbol) => {
+            //         console.info("candlesticks()", ticks);
+            //         let last_tick = ticks[ticks.length - 1];
+            //         let [time, open, high, low, close, volume, closeTime, assetVolume, trades, buyBaseVolume, buyAssetVolume, ignored] = last_tick;
+            //         console.info(symbol + " last close: " + close);
+            //     }, { limit: 500, endTime: 1514764800000 });
+            //     return response;
+        })
+    }
+
+    sendMail() {
+        return this.emailService.sendMail()
     }
 }

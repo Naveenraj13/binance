@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AppController } from './app.controller';
+import { EmailService } from './email/email.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { AppController } from './app.controller';
       rootPath: join(__dirname, '..', 'client'),
     }),
   ],
-  providers: [AppService],
+  providers: [AppService, EmailService],
   controllers: [AppController]
 })
 export class AppModule {
