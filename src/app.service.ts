@@ -170,29 +170,34 @@ export class AppService {
 
     klineChart() {
         return new Promise((resolve, reject) => {
-            this.binance.websockets.candlesticks(['BNBBTC'], "15m", (candlesticks) => {
+            this.binance.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
                 let { e: eventType, E: eventTime, s: symbol, k: ticks } = candlesticks;
                 let { o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume } = ticks;
 
                 if (ticks.x == true) {
                     if (ticks.c < ticks.o) {
-                        console.log("candle pattern 1st condistion satisfied",this.arr)
                         this.arr.push(ticks);
-                    }
-                    if (ticks.c > ticks.o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
-                        console.log("candle pattern 2nd condistion satisfied", this.arr)
-                        console.info(symbol + " " + interval + " candlestick update");
-                        console.info("open: " + open);
-                        console.info("high: " + high);
-                        console.info("close: " + close);
-                        this.sendMail();
-                    } 
-                    else {
-                        this.arr.length = 0;
+                        console.log("candle pattern 1st condistion satisfied", this.arr)
+                    } else {
+                        if (ticks.c > this.arr[0].o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
+                            console.log("candle pattern 2nd condistion satisfied", this.arr)
+                            this.arr.push(ticks);
+                            this.sendMail();
+                            
+                            if (ticks.c > this.arr[1].c && this.arr.length > 0 && ticks.h > this.arr[1].h) {
+                                console.log("candle pattern 3rd condistion satisfied", this.arr)
+                                this.arr.push(ticks);
+                            }else{
+                                this.arr.length = 0;
+                            }
+                        }
+                        else {
+                            this.arr.length = 0;
+                        }
                     }
                 }
                 console.log('array length', this.arr.length)
-                console.log('array element', this.arr)
+                // console.log('array element', this.arr)
             });
         });
     }

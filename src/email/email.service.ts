@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 const Sib = require('sib-api-v3-sdk')
 const client = Sib.ApiClient.instance
 const apiKey = client.authentications['api-key']
-apiKey.apiKey = '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'
+apiKey.apiKey = 'GOKUL REPLACE THE KEY HERE'
 
 @Injectable()
 export class EmailService {
