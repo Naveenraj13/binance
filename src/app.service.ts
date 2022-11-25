@@ -177,15 +177,15 @@ export class AppService {
                 if (ticks.x == true) {
                     if (ticks.c < ticks.o) {
                         this.arr.push(ticks);
-                        console.log("candle pattern 1st condistion satisfied", this.arr)
+                        console.log("candle pattern 1st condition satisfied", this.arr)
                     } else {
                         if (ticks.c > this.arr[0].o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
-                            console.log("candle pattern 2nd condistion satisfied", this.arr)
+                            console.log("candle pattern 2nd condition satisfied", this.arr)
                             this.arr.push(ticks);
                             this.sendMail();
-                            
+
                             if (ticks.c > this.arr[1].c && this.arr.length > 0 && ticks.h > this.arr[1].h) {
-                                console.log("candle pattern 3rd condistion satisfied", this.arr)
+                                console.log("candle pattern 3rd condition satisfied", this.arr)
                                 this.arr.push(ticks);
                             }else{
                                 this.arr.length = 0;
