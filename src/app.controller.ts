@@ -281,9 +281,4 @@ export class AppController {
     });
   }
 
-  @Post('sendMail')
-  async sendMail() {
-    return this.appService.sendMail();
-  }
-
 }

@@ -170,33 +170,34 @@ export class AppService {
 
     klineChart() {
         return new Promise((resolve, reject) => {
-            this.binance.websockets.candlesticks(['BNBBTC'], "1m", (candlesticks) => {
+            this.binance.websockets.candlesticks(['BNBBTC'], "15m", (candlesticks) => {
                 let { e: eventType, E: eventTime, s: symbol, k: ticks } = candlesticks;
                 let { o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume } = ticks;
 
                 if (ticks.x == true) {
                     if (ticks.c < ticks.o) {
+                        this.arr.length = 0;
                         this.arr.push(ticks);
-                        console.log("candle pattern 1st condition satisfied", this.arr)
-                    } else {
-                        if (ticks.c > this.arr[0].o && this.arr.length > 0 && ticks.h > this.arr[0].h) {
-                            console.log("candle pattern 2nd condition satisfied", this.arr)
-                            this.arr.push(ticks);
-                            this.sendMail();
+                        console.log("candle pattern 1st condition satisfied: ", this.arr)
+                    }
 
-                            if (ticks.c > this.arr[1].c && this.arr.length > 0 && ticks.h > this.arr[1].h) {
-                                console.log("candle pattern 3rd condition satisfied", this.arr)
-                                this.arr.push(ticks);
-                            }else{
-                                this.arr.length = 0;
-                            }
-                        }
-                        else {
-                            this.arr.length = 0;
-                        }
+                    if (this.arr.length == 1 && ticks.c > this.arr[0].o && ticks.h > this.arr[0].h) {
+                        console.log("candle pattern 2nd condition satisfied: ", this.arr)
+                        this.arr.push(ticks);
+                        this.sendMail('2nd condition satisfied');
+                    } else {
+                        this.arr.length = 0;
+                    }
+
+                    if (this.arr.length == 2 && ticks.c > this.arr[1].c && ticks.h > this.arr[1].h) {
+                        console.log("candle pattern 3rd condition satisfied: ", this.arr)
+                        this.arr.push(ticks);
+                        this.sendMail('3rd condition satisfied');
+                    } else {
+                        this.arr.length = 0;
                     }
                 }
-                console.log('array length', this.arr.length)
+                // console.log('array length', this.arr.length)
                 // console.log('array element', this.arr)
             });
         });
@@ -324,7 +325,7 @@ export class AppService {
         })
     }
 
-    sendMail() {
-        return this.emailService.sendMail()
+    sendMail(text: any) {
+        return this.emailService.sendMail(text)
     }
 }

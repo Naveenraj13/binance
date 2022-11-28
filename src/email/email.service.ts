@@ -6,7 +6,7 @@ apiKey.apiKey = 'GOKUL REPLACE THE KEY HERE'
 
 @Injectable()
 export class EmailService {
-    sendMail() {
+    sendMail(text: any) {
         const tranEmailApi = new Sib.TransactionalEmailsApi()
         const sender = {
             email: 'naveenraj.mju@gmail.com',
@@ -22,7 +22,7 @@ export class EmailService {
                 sender,
                 to: receivers,
                 subject: 'New Candle Pattern Detected',
-                textContent: `Hiii Gokul, Good Morning`,
+                textContent: text,
                 params: {
                     role: 'Frontend',
                 },
